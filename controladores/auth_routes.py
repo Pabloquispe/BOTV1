@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session
 from modelos.models import db, Usuario, Vehiculo
 from .decorators import login_required
+redirect, url_for
 
 auth_bp = Blueprint('auth', __name__)
 
