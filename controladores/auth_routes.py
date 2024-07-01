@@ -10,18 +10,15 @@ def login():
         email = request.form['email']
         password = request.form['password']
         user = Usuario.query.filter_by(email=email).first()
-        if user:
-            if user.check_password(password):
-                session['user_id'] = user.id
-                session['user_role'] = user.rol
-                if user.rol == 'administrador':
-                    return redirect(url_for('admin.dashboard'))
-                else:
-                    return redirect(url_for('user.perfil'))
+        if user and user.check_password(password):
+            session['user_id'] = user.id
+            session['user_role'] = user.rol
+            if user.rol == 'administrador':
+                return redirect(url_for('admin.dashboard'))
             else:
-                flash('Contraseña incorrecta', 'error')
+                return redirect(url_for('user.perfil'))
         else:
-            flash('Usuario no encontrado', 'error')
+            flash('Correo electrónico o contraseña incorrectos', 'error')
     return render_template('login.html')
 
 @auth_bp.route('/logout')
@@ -83,4 +80,5 @@ def register():
         return redirect(url_for('auth.login'))
     
     return render_template('register.html')
+
 
