@@ -1,7 +1,7 @@
 # controladores/auth_routes.py
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session
 from modelos.models import db, Usuario, Vehiculo
-from .decorators import login_required, admin_required
+from .decorators import login_required, admin_required  # Cambiar .decorator a .decorators
 
 auth_bp = Blueprint('auth', __name__)
 
