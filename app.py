@@ -1,18 +1,4 @@
-from dotenv import load_dotenv
 import os
-from flask import Flask
-from controladores.main_routes import main_bp
-from auth import auth_bp 
-
-app = Flask(__name__)
-app.register_blueprint(main_bp)
-
-load_dotenv()  # Cargar las variables de entorno desde el archivo .env
-
-# Imprimir las variables de entorno para verificar
-print(f"SECRET_KEY: {os.getenv('SECRET_KEY')}")
-print(f"DATABASE_URL: {os.getenv('DATABASE_URL')}")
-
 from flask import Flask
 from flask_migrate import Migrate
 from config import config_by_name
@@ -52,4 +38,3 @@ if __name__ == "__main__":
     config_name = os.getenv('FLASK_CONFIG') or 'dev'
     app = create_app(config_name)
     app.run(debug=(config_name == 'dev'))
-    app.run(debug=True)
