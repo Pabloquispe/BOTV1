@@ -1,6 +1,5 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session
 from modelos.models import db, Usuario, Vehiculo
-from .decorators import login_required
 
 auth_bp = Blueprint('auth', __name__)
 
@@ -81,4 +80,5 @@ def register():
         return redirect(url_for('auth.login'))
     
     return render_template('register.html')
+
 
