@@ -28,7 +28,7 @@ def create_app(config_name):
     # Registrar Blueprints
     app.register_blueprint(admin_bp)
     app.register_blueprint(user_bp)
-    app.register_blueprint(auth_bp, url_prefix='/auth')
+    app.register_blueprint(auth_bp, url_prefix='/auth')  # Asegúrate de que este es el prefijo correcto
     app.register_blueprint(main_bp)
 
     with app.app_context():
