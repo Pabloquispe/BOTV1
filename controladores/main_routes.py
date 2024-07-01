@@ -1,5 +1,6 @@
 from flask import Blueprint, redirect, url_for
 from flask import Blueprint, jsonify
+redirect, url_for
 
 main_bp = Blueprint('main', __name__)
 
