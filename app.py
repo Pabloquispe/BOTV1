@@ -25,7 +25,7 @@ def create_app(config_name):
     app.register_blueprint(user_bp, url_prefix='/user')
     app.register_blueprint(auth_bp, url_prefix='/auth')
     app.register_blueprint(main_bp)
-    
+
     with app.app_context():
         from controladores.routes import register_routes
         register_routes(app)
@@ -37,3 +37,4 @@ if __name__ == "__main__":
     config_name = os.getenv('FLASK_CONFIG') or 'dev'
     app = create_app(config_name)
     app.run(debug=(config_name == 'dev'))
+
