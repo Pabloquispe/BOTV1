@@ -1,4 +1,3 @@
-import os
 from flask import Flask
 from flask_migrate import Migrate
 from config import config_by_name
@@ -22,9 +21,9 @@ def create_app(config_name):
     migrate = Migrate(app, db)
 
     # Registrar Blueprints
-    app.register_blueprint(admin_bp)
-    app.register_blueprint(user_bp)
-    app.register_blueprint(auth_bp)
+    app.register_blueprint(admin_bp, url_prefix='/admin')
+    app.register_blueprint(user_bp, url_prefix='/user')
+    app.register_blueprint(auth_bp, url_prefix='/auth')
     app.register_blueprint(main_bp)
     
     with app.app_context():
