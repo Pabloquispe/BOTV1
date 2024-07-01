@@ -2,6 +2,7 @@ from dotenv import load_dotenv
 import os
 from flask import Flask
 from controladores.main_routes import main_bp
+from auth import auth_bp 
 
 app = Flask(__name__)
 app.register_blueprint(main_bp)
