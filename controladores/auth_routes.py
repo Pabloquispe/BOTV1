@@ -59,7 +59,7 @@ def register():
             pais=pais,
             fecha_nacimiento=fecha_nacimiento,
             genero=genero,
-            rol='administrador' si 'admin@dominio.com' en email sino 'usuario'
+            rol='administrador' if 'admin@dominio.com' in email else 'usuario'
         )
         nuevo_usuario.set_password(password)
         
@@ -81,4 +81,3 @@ def register():
         return redirect(url_for('auth.login'))
     
     return render_template('register.html')
-
