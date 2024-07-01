@@ -10,6 +10,7 @@ def login():
         email = request.form['email']
         password = request.form['password']
         user = Usuario.query.filter_by(email=email).first()
+        
         if user and user.check_password(password):
             session['user_id'] = user.id
             session['user_role'] = user.rol
@@ -18,7 +19,8 @@ def login():
             else:
                 return redirect(url_for('user.perfil'))
         else:
-            flash('Correo o contraseña incorrectos', 'error')
+            flash('Correo electrónico o contraseña incorrectos', 'error')
+    
     return render_template('login.html')
 
 @auth_bp.route('/logout')
@@ -42,12 +44,13 @@ def register():
         anio = request.form['anio']
         password = request.form['password']
         
-        user = Usuario.query.filter_by(email=email).first()
-        if user:
+        # Verificar si el correo electrónico ya está registrado
+        if Usuario.query.filter_by(email=email).first():
             flash('El correo electrónico ya está registrado.', 'error')
             return redirect(url_for('auth.register'))
         
-        new_user = Usuario(
+        # Crear un nuevo usuario
+        nuevo_usuario = Usuario(
             nombre=nombre,
             apellido=apellido,
             email=email,
@@ -56,21 +59,22 @@ def register():
             pais=pais,
             fecha_nacimiento=fecha_nacimiento,
             genero=genero,
-            rol='administrador' if 'admin@dominio.com' in email else 'usuario'
+            rol='administrador' si 'admin@dominio.com' en email sino 'usuario'
         )
-        new_user.set_password(password)
+        nuevo_usuario.set_password(password)
         
-        db.session.add(new_user)
+        db.session.add(nuevo_usuario)
         db.session.commit()
 
-        new_vehicle = Vehiculo(
-            usuario_id=new_user.id,
+        # Crear un nuevo vehículo
+        nuevo_vehiculo = Vehiculo(
+            usuario_id=nuevo_usuario.id,
             marca=marca,
             modelo=modelo,
             año=anio
         )
         
-        db.session.add(new_vehicle)
+        db.session.add(nuevo_vehiculo)
         db.session.commit()
         
         flash('Usuario y vehículo registrados con éxito. Por favor, inicie sesión.', 'success')
