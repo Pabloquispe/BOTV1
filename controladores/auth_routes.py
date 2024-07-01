@@ -1,7 +1,6 @@
-# controladores/auth_routes.py
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session
 from modelos.models import db, Usuario, Vehiculo
-from .decorators import login_required, admin_required  # Asegúrate de que sea .decorators
+from .decorators import login_required
 
 auth_bp = Blueprint('auth', __name__)
 
@@ -11,15 +10,18 @@ def login():
         email = request.form['email']
         password = request.form['password']
         user = Usuario.query.filter_by(email=email).first()
-        if user and user.check_password(password):
-            session['user_id'] = user.id
-            session['user_role'] = user.rol
-            if user.rol == 'administrador':
-                return redirect(url_for('admin.dashboard'))
+        if user:
+            if user.check_password(password):
+                session['user_id'] = user.id
+                session['user_role'] = user.rol
+                if user.rol == 'administrador':
+                    return redirect(url_for('admin.dashboard'))
+                else:
+                    return redirect(url_for('user.perfil'))
             else:
-                return redirect(url_for('user.perfil'))
+                flash('Contraseña incorrecta', 'error')
         else:
-            flash('Correo electrónico o contraseña incorrectos', 'error')
+            flash('Usuario no encontrado', 'error')
     return render_template('login.html')
 
 @auth_bp.route('/logout')
@@ -42,13 +44,13 @@ def register():
         modelo = request.form['modelo']
         anio = request.form['anio']
         password = request.form['password']
-
+        
         # Verificar si el correo electrónico ya está registrado
         user = Usuario.query.filter_by(email=email).first()
         if user:
             flash('El correo electrónico ya está registrado.', 'error')
             return redirect(url_for('auth.register'))
-
+        
         # Crear un nuevo usuario
         new_user = Usuario(
             nombre=nombre,
@@ -62,7 +64,7 @@ def register():
             rol='administrador' if 'admin@dominio.com' in email else 'usuario'
         )
         new_user.set_password(password)
-
+        
         db.session.add(new_user)
         db.session.commit()
 
@@ -73,15 +75,13 @@ def register():
             modelo=modelo,
             año=anio
         )
-
+        
         db.session.add(new_vehicle)
         db.session.commit()
-
+        
         flash('Usuario y vehículo registrados con éxito. Por favor, inicie sesión.', 'success')
         return redirect(url_for('auth.login'))
-
+    
     return render_template('register.html')
-
-
 
 
