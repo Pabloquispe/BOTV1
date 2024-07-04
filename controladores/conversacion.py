@@ -11,7 +11,7 @@ from flask import Blueprint, request, jsonify, current_app as app, redirect, url
 # Configuración de la API de OpenAI
 openai.api_key = os.getenv('OPENAI_API_KEY')
 
-RESERVAS_API_URL = os.getenv('RESERVAS_API_URL')
+RESERVAS_API_URL = os.getenv('URL')
 # Variable global para almacenar el estado de la conversación
 conversation_state = {
     "usuario_id": None,
@@ -358,7 +358,7 @@ def handle_message(message):
             'password': conversation_state["password"],
             'estado': 'inicio'
         }
-        response_usuario = requests.post('http://127.0.0.1:5000/usuarios', json=usuario_data)
+        response_usuario = requests.post(f'{URL}/usuarios', json=usuario_data)
 
         if response_usuario.status_code == 200:
             conversation_state["usuario_id"] = response_usuario.json()['usuario']
@@ -368,7 +368,7 @@ def handle_message(message):
                 'modelo': conversation_state["modelo"],
                 'año': conversation_state["año"]
             }
-            response_vehiculo = requests.post('http://127.0.0.1:5000/vehiculos', json=vehiculo_data)
+            response_vehiculo = requests.post(f'{URL}/vehiculos', json=vehiculo_data)
             if response_vehiculo.status_code == 200:
                 conversation_state["vehiculo_id"] = response_vehiculo.json()['vehiculo']
                 conversation_state["estado"] = "reservar_servicio"
@@ -499,7 +499,7 @@ def handle_message(message):
                 'problema': conversation_state["problema"],
                 'fecha_hora': fecha_hora_reserva.strftime('%Y-%m-%d %H:%M:%S')
             }
-            response = requests.post('http://127.0.0.1:5000/reservas', json=reserva_data)
+            response = requests.post(f'{URL}/reservas', json=reserva_data)
 
             if response.status_code == 200:
                 slot.reservado = True
