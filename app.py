@@ -1,18 +1,6 @@
 from dotenv import load_dotenv
 import os
-from flask import Flask
-from controladores.main_routes import main_bp
-
-app = Flask(__name__)
-app.register_blueprint(main_bp)
-
-load_dotenv()  # Cargar las variables de entorno desde el archivo .env
-
-# Imprimir las variables de entorno para verificar
-print(f"SECRET_KEY: {os.getenv('SECRET_KEY')}")
-print(f"DATABASE_URL: {os.getenv('DATABASE_URL')}")
-
-from flask import Flask
+from flask import Flask, render_template
 from flask_migrate import Migrate
 from config import config_by_name
 from modelos.models import db
@@ -20,6 +8,15 @@ from controladores.admin_routes import admin_bp
 from controladores.user_routes import user_bp
 from controladores.auth_routes import auth_bp
 from controladores.main_routes import main_bp
+from flask_mail import Mail
+import logging
+from logging.handlers import RotatingFileHandler
+
+# Cargar variables de entorno
+load_dotenv()
+
+# Inicializar Flask-Mail
+mail = Mail()
 
 def create_app(config_name):
     """Crea y configura la aplicación Flask."""
@@ -34,6 +31,10 @@ def create_app(config_name):
     db.init_app(app)
     migrate = Migrate(app, db)
 
+    # Inicializar Flask-Mail solo si las credenciales están presentes
+    if app.config['MAIL_USERNAME'] and app.config['MAIL_PASSWORD']:
+        mail.init_app(app)
+
     # Registrar Blueprints
     app.register_blueprint(admin_bp)
     app.register_blueprint(user_bp)
@@ -45,10 +46,42 @@ def create_app(config_name):
         register_routes(app)
         db.create_all()
 
+    # Configuración de logs
+    configure_logging(app)
+
+    # Manejo de errores personalizados
+    configure_error_handlers(app)
+
     return app
 
+def configure_logging(app):
+    """Configura los logs de la aplicación."""
+    if not app.debug:
+        if not os.path.exists('logs'):
+            os.mkdir('logs')
+        file_handler = RotatingFileHandler('logs/app.log', maxBytes=10240, backupCount=10)
+        file_handler.setLevel(logging.INFO)
+        formatter = logging.Formatter(
+            '%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]'
+        )
+        file_handler.setFormatter(formatter)
+        app.logger.addHandler(file_handler)
+
+        app.logger.setLevel(logging.INFO)
+        app.logger.info('Aplicación iniciada')
+
+def configure_error_handlers(app):
+    """Configura los manejadores de errores."""
+    @app.errorhandler(404)
+    def not_found_error(error):
+        return render_template('404.html'), 404
+
+    @app.errorhandler(500)
+    def internal_error(error):
+        db.session.rollback()
+        return render_template('500.html'), 500
+
 if __name__ == "__main__":
-    config_name = os.getenv('FLASK_CONFIG') or 'dev'
+    config_name = os.getenv('FLASK_CONFIG', 'default')  # Configuración predeterminada
     app = create_app(config_name)
-    app.run(debug=(config_name == 'dev'))
-    app.run(debug=True)
+    app.run(debug=(config_name == 'development'))
