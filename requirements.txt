@@ -49,5 +49,10 @@ Werkzeug==3.0.3
 XlsxWriter==3.2.0
 gunicorn==20.1.0
 Flask-Script
+<<<<<<< HEAD
 Flask-Mail
+=======
+python-dotenv
+
+>>>>>>> 2943027bcd9dc31cd3f716a0d516ea590f8f3f70
 

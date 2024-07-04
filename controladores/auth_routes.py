@@ -1,6 +1,5 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session
 from modelos.models import db, Usuario, Vehiculo
-from .decorators import login_required
 
 auth_bp = Blueprint('auth', __name__)
 
@@ -10,18 +9,17 @@ def login():
         email = request.form['email']
         password = request.form['password']
         user = Usuario.query.filter_by(email=email).first()
-        if user:
-            if user.check_password(password):
-                session['user_id'] = user.id
-                session['user_role'] = user.rol
-                if user.rol == 'administrador':
-                    return redirect(url_for('admin.dashboard'))
-                else:
-                    return redirect(url_for('user.perfil'))
+        
+        if user and user.check_password(password):
+            session['user_id'] = user.id
+            session['user_role'] = user.rol
+            if user.rol == 'administrador':
+                return redirect(url_for('admin.dashboard'))
             else:
-                flash('Contraseña incorrecta', 'error')
+                return redirect(url_for('user.perfil'))
         else:
-            flash('Usuario no encontrado', 'error')
+            flash('Correo electrónico o contraseña incorrectos', 'error')
+    
     return render_template('login.html')
 
 @auth_bp.route('/logout')
@@ -46,13 +44,12 @@ def register():
         password = request.form['password']
         
         # Verificar si el correo electrónico ya está registrado
-        user = Usuario.query.filter_by(email=email).first()
-        if user:
+        if Usuario.query.filter_by(email=email).first():
             flash('El correo electrónico ya está registrado.', 'error')
             return redirect(url_for('auth.register'))
         
         # Crear un nuevo usuario
-        new_user = Usuario(
+        nuevo_usuario = Usuario(
             nombre=nombre,
             apellido=apellido,
             email=email,
@@ -63,23 +60,25 @@ def register():
             genero=genero,
             rol='administrador' if 'admin@dominio.com' in email else 'usuario'
         )
-        new_user.set_password(password)
+        nuevo_usuario.set_password(password)
         
-        db.session.add(new_user)
+        db.session.add(nuevo_usuario)
         db.session.commit()
 
         # Crear un nuevo vehículo
-        new_vehicle = Vehiculo(
-            usuario_id=new_user.id,
+        nuevo_vehiculo = Vehiculo(
+            usuario_id=nuevo_usuario.id,
             marca=marca,
             modelo=modelo,
             año=anio
         )
         
-        db.session.add(new_vehicle)
+        db.session.add(nuevo_vehiculo)
         db.session.commit()
         
         flash('Usuario y vehículo registrados con éxito. Por favor, inicie sesión.', 'success')
         return redirect(url_for('auth.login'))
     
     return render_template('register.html')
+
+
