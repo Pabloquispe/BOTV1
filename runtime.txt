@@ -1,6 +1,2 @@
-<<<<<<< HEAD
+python-3.9.10
 
-python-3.9.10
-=======
-python-3.9.10
->>>>>>> 2943027bcd9dc31cd3f716a0d516ea590f8f3f70
