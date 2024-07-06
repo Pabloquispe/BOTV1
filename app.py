@@ -1,6 +1,6 @@
 from flask import Flask, render_template
 from flask_migrate import Migrate
-from flask_session import Session
+# from flask_session import Session  # Comentar esta línea
 from config import config_by_name
 from modelos.models import db
 from controladores.admin_routes import admin_bp
@@ -21,16 +21,16 @@ def create_app(config_name):
     app = Flask(__name__, template_folder='vistas/templates', static_folder='vistas/static')
     app.config.from_object(config_by_name[config_name])
 
-    # Configuración de sesiones
-    app.config['SESSION_TYPE'] = 'filesystem'
-    app.config['SESSION_FILE_DIR'] = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'flask_session')
-    app.config['SESSION_PERMANENT'] = False
-    app.config['SESSION_USE_SIGNER'] = True
-    app.config['SESSION_FILE_THRESHOLD'] = 100
-    app.config['SESSION_FILE_MODE'] = 0o600
+    # Configuración de sesiones (comentar estas líneas)
+    # app.config['SESSION_TYPE'] = 'filesystem'
+    # app.config['SESSION_FILE_DIR'] = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'flask_session')
+    # app.config['SESSION_PERMANENT'] = False
+    # app.config['SESSION_USE_SIGNER'] = True
+    # app.config['SESSION_FILE_THRESHOLD'] = 100
+    # app.config['SESSION_FILE_MODE'] = 0o600
 
-    # Inicializar Flask-Session
-    Session(app)
+    # Inicializar Flask-Session (comentar esta línea)
+    # Session(app)
 
     # Configurar opciones del motor SQLAlchemy
     app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
