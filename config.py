@@ -12,12 +12,6 @@ class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY') or os.urandom(24)
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
-    # Configuración de horarios de servicios
-    HORARIO_INICIO_MANANA = '09:00'
-    HORARIO_FIN_MANANA = '12:00'
-    HORARIO_INICIO_TARDE = '13:00'
-    HORARIO_FIN_TARDE = '18:00'
-
     # Configuración de sesiones basada en archivos
     SESSION_TYPE = 'filesystem'
     SESSION_FILE_DIR = os.path.join(BASE_DIR, 'flask_session')
@@ -30,11 +24,7 @@ class Config:
 class DevelopmentConfig(Config):
     """Configuración utilizada durante el desarrollo."""
     DEBUG = True
-    DATABASE_URL = os.environ.get('DATABASE_URL')
-    if DATABASE_URL:
-        SQLALCHEMY_DATABASE_URI = DATABASE_URL.replace('mysql://', 'mysql+pymysql://')
-    else:
-        raise ValueError("DATABASE_URL environment variable not set")
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL').replace('mysql://', 'mysql+pymysql://')
 
 class TestingConfig(Config):
     """Configuración utilizada durante las pruebas."""
@@ -45,11 +35,7 @@ class TestingConfig(Config):
 class ProductionConfig(Config):
     """Configuración utilizada en producción."""
     DEBUG = False
-    DATABASE_URL = os.environ.get('DATABASE_URL')
-    if DATABASE_URL:
-        SQLALCHEMY_DATABASE_URI = DATABASE_URL.replace('mysql://', 'mysql+pymysql://')
-    else:
-        raise ValueError("DATABASE_URL environment variable not set")
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL').replace('mysql://', 'mysql+pymysql://')
 
 # Diccionario para facilitar el acceso a las configuraciones
 config_by_name = {
@@ -58,4 +44,3 @@ config_by_name = {
     'prod': ProductionConfig,
     'default': DevelopmentConfig
 }
-
