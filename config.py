@@ -12,6 +12,12 @@ class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY') or os.urandom(24)
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
+    # Configuración de horarios de servicios
+    HORARIO_INICIO_MANANA = '09:00'
+    HORARIO_FIN_MANANA = '12:00'
+    HORARIO_INICIO_TARDE = '13:00'
+    HORARIO_FIN_TARDE = '18:00'
+
     # Configuración de sesiones basada en archivos
     SESSION_TYPE = 'filesystem'
     SESSION_FILE_DIR = os.path.join(BASE_DIR, 'flask_session')
