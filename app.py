@@ -21,15 +21,6 @@ def create_app(config_name):
     app = Flask(__name__, template_folder='vistas/templates', static_folder='vistas/static')
     app.config.from_object(config_by_name[config_name])
 
-    # Configuración de sesiones
-    app.config['SESSION_TYPE'] = 'filesystem'
-    app.config['SESSION_FILE_DIR'] = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'flask_session')
-    app.config['SESSION_PERMANENT'] = False
-    app.config['SESSION_USE_SIGNER'] = True
-    app.config['SESSION_FILE_THRESHOLD'] = 100
-    app.config['SESSION_FILE_MODE'] = 0o600
-    app.config['SESSION_COOKIE_NAME'] = 'my_session'  # Asegúrate de que esto está configurado
-
     # Inicializar Flask-Session
     Session(app)
 
@@ -95,4 +86,5 @@ if __name__ == '__main__':
     config_name = os.getenv('FLASK_CONFIG', 'default')
     app = create_app(config_name)
     app.run(debug=True)
+
 
