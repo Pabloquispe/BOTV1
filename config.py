@@ -43,4 +43,12 @@ class ProductionConfig(Config):
     DEBUG = False
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL').replace('mysql://', 'mysql+pymysql://')
 
+# Diccionario para facilitar el acceso a las configuraciones
+config_by_name = {
+    'dev': DevelopmentConfig,
+    'test': TestingConfig,
+    'prod': ProductionConfig,
+    'default': DevelopmentConfig
+}
+
 
