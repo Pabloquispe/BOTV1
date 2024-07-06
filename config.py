@@ -18,13 +18,14 @@ class Config:
     HORARIO_INICIO_TARDE = '13:00'
     HORARIO_FIN_TARDE = '18:00'
 
-    # Configuración de Flask-Mail (opcional)
-    MAIL_SERVER = os.getenv('MAIL_SERVER', 'localhost')
-    MAIL_PORT = int(os.getenv('MAIL_PORT', 25))
-    MAIL_USE_TLS = os.getenv('MAIL_USE_TLS', 'False').lower() in ['true', 'on', '1']
-    MAIL_USERNAME = os.getenv('MAIL_USERNAME')
-    MAIL_PASSWORD = os.getenv('MAIL_PASSWORD')
-    MAIL_DEFAULT_SENDER = os.getenv('MAIL_DEFAULT_SENDER', 'no-reply@example.com')
+    # Configuración de sesiones basada en archivos
+    SESSION_TYPE = 'filesystem'
+    SESSION_FILE_DIR = os.path.join(BASE_DIR, 'flask_session')
+    SESSION_PERMANENT = False
+    SESSION_USE_SIGNER = True
+    SESSION_FILE_THRESHOLD = 100
+    SESSION_FILE_MODE = 0o600
+    SESSION_COOKIE_NAME = 'my_session'
 
 class DevelopmentConfig(Config):
     """Configuración utilizada durante el desarrollo."""
@@ -36,18 +37,10 @@ class TestingConfig(Config):
     TESTING = True
     SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(BASE_DIR, 'test.db')
     DEBUG = True
-    MAIL_SUPPRESS_SEND = True  # Esto suprimirá el envío de correos electrónicos en pruebas
 
 class ProductionConfig(Config):
     """Configuración utilizada en producción."""
     DEBUG = False
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL').replace('mysql://', 'mysql+pymysql://')
-    MAIL_SUPPRESS_SEND = False  # Habilitar el envío de correos en producción
 
-# Diccionario para facilitar el acceso a las configuraciones
-config_by_name = {
-    'development': DevelopmentConfig,
-    'testing': TestingConfig,
-    'production': ProductionConfig,
-    'default': DevelopmentConfig
-}
+
