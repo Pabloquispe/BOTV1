@@ -1,16 +1,7 @@
 from flask import Flask, render_template
-from flask_sqlalchemy import SQLAlchemy
-from flask_migrate import Migrate
-# from flask_session import Session
 import os
 
-app = Flask(__name__, template_folder='app/main/templates')
-app.config.from_object(os.getenv('FLASK_CONFIG') or 'default')
-
-# db = SQLAlchemy(app)
-# migrate = Migrate(app, db)
-
-# Session(app)
+app = Flask(__name__, template_folder='vistas/templates')
 
 @app.route('/')
 def home():
@@ -26,4 +17,3 @@ def internal_error(error):
 
 if __name__ == '__main__':
     app.run(debug=True)
-
