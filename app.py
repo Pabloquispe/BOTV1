@@ -1,49 +1,59 @@
-from dotenv import load_dotenv
-import os
 from flask import Flask, render_template
 from flask_migrate import Migrate
+from flask_session import Session
 from config import config_by_name
 from modelos.models import db
 from controladores.admin_routes import admin_bp
 from controladores.user_routes import user_bp
 from controladores.auth_routes import auth_bp
 from controladores.main_routes import main_bp
-from flask_mail import Mail
+from controladores.routes import register_routes
 import logging
 from logging.handlers import RotatingFileHandler
+from dotenv import load_dotenv
+import os
 
 # Cargar variables de entorno
 load_dotenv()
-
-# Inicializar Flask-Mail
-mail = Mail()
 
 def create_app(config_name):
     """Crea y configura la aplicación Flask."""
     app = Flask(__name__, template_folder='vistas/templates', static_folder='vistas/static')
     app.config.from_object(config_by_name[config_name])
-    
-    # Verificar si la configuración de la base de datos está correcta
-    if 'SQLALCHEMY_DATABASE_URI' not in app.config:
-        raise RuntimeError("SQLALCHEMY_DATABASE_URI no está configurado")
 
-    # Inicializar la base de datos
+    # Configuración de sesiones
+    app.config['SESSION_TYPE'] = 'filesystem'
+    app.config['SESSION_FILE_DIR'] = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'flask_session')
+    app.config['SESSION_PERMANENT'] = False
+    app.config['SESSION_USE_SIGNER'] = True
+    app.config['SESSION_FILE_THRESHOLD'] = 100
+    app.config['SESSION_FILE_MODE'] = 0o600
+    app.config['SESSION_COOKIE_NAME'] = 'my_session'
+
+    # Inicializar Flask-Session
+    Session(app)
+
+    # Configurar opciones del motor SQLAlchemy
+    app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
+        'pool_size': 10,
+        'max_overflow': 20,
+        'pool_timeout': 30,
+        'pool_recycle': 3600,
+    }
+
     db.init_app(app)
-    migrate = Migrate(app, db)
+    db.app = app
 
-    # Inicializar Flask-Mail solo si las credenciales están presentes
-    if app.config['MAIL_USERNAME'] and app.config['MAIL_PASSWORD']:
-        mail.init_app(app)
+    migrate = Migrate(app, db)
 
     # Registrar Blueprints
     app.register_blueprint(admin_bp)
     app.register_blueprint(user_bp)
     app.register_blueprint(auth_bp)
     app.register_blueprint(main_bp)
-    
+    register_routes(app)
+
     with app.app_context():
-        from controladores.routes import register_routes
-        register_routes(app)
         db.create_all()
 
     # Configuración de logs
@@ -81,8 +91,7 @@ def configure_error_handlers(app):
         db.session.rollback()
         return render_template('500.html'), 500
 
-if __name__ == "__main__":
-    config_name = os.getenv('FLASK_CONFIG', 'default')  # Configuración predeterminada
-    app = create_app(config_name)
-    app.run(debug=(config_name == 'development'))
+if __name__ == '__main__':
+    config_name = os.getenv('FLASK_CONFIG', 'default')
+
 
