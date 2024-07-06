@@ -30,7 +30,11 @@ class Config:
 class DevelopmentConfig(Config):
     """Configuración utilizada durante el desarrollo."""
     DEBUG = True
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL').replace('mysql://', 'mysql+pymysql://')
+    DATABASE_URL = os.environ.get('DATABASE_URL')
+    if DATABASE_URL:
+        SQLALCHEMY_DATABASE_URI = DATABASE_URL.replace('mysql://', 'mysql+pymysql://')
+    else:
+        raise ValueError("DATABASE_URL environment variable not set")
 
 class TestingConfig(Config):
     """Configuración utilizada durante las pruebas."""
@@ -41,7 +45,11 @@ class TestingConfig(Config):
 class ProductionConfig(Config):
     """Configuración utilizada en producción."""
     DEBUG = False
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL').replace('mysql://', 'mysql+pymysql://')
+    DATABASE_URL = os.environ.get('DATABASE_URL')
+    if DATABASE_URL:
+        SQLALCHEMY_DATABASE_URI = DATABASE_URL.replace('mysql://', 'mysql+pymysql://')
+    else:
+        raise ValueError("DATABASE_URL environment variable not set")
 
 # Diccionario para facilitar el acceso a las configuraciones
 config_by_name = {
@@ -50,3 +58,4 @@ config_by_name = {
     'prod': ProductionConfig,
     'default': DevelopmentConfig
 }
+
