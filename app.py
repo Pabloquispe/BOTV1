@@ -1,19 +1,20 @@
 from flask import Flask, render_template
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
+from config import config_by_name
 
 db = SQLAlchemy()
 migrate = Migrate()
 
-def create_app(config_class='config.Config'):
+def create_app(config_name='default'):
     app = Flask(__name__, template_folder='vistas/templates')
-    app.config.from_object(config_class)
+    app.config.from_object(config_by_name[config_name])
 
     db.init_app(app)
     migrate.init_app(app, db)
 
     from controladores import main_routes
-    app.register_blueprint(main_routes.bp)
+    app.register_blueprint(main_routes.main_bp)
 
     @app.route('/')
     def home():
