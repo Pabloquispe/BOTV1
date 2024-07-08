@@ -1,8 +1,9 @@
+import os
 from flask import Flask, render_template
 from flask_migrate import Migrate
 from flask_session import Session
-from flask_sqlalchemy import SQLAlchemy
 from config import config_by_name
+from modelos.models import db
 from controladores.admin_routes import admin_bp
 from controladores.user_routes import user_bp
 from controladores.auth_routes import auth_bp
@@ -11,13 +12,9 @@ from controladores.routes import register_routes
 import logging
 from logging.handlers import RotatingFileHandler
 from dotenv import load_dotenv
-import os
 
 # Cargar variables de entorno
 load_dotenv()
-
-# Inicializar SQLAlchemy
-db = SQLAlchemy()
 
 def create_app(config_name):
     """Crea y configura la aplicación Flask."""
@@ -36,6 +33,7 @@ def create_app(config_name):
     }
 
     db.init_app(app)
+    db.app = app
 
     migrate = Migrate(app, db)
 
@@ -88,4 +86,5 @@ if __name__ == '__main__':
     config_name = os.getenv('FLASK_CONFIG', 'default')
     app = create_app(config_name)
     app.run(debug=True)
+
 
