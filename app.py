@@ -12,22 +12,32 @@ import logging
 from logging.handlers import RotatingFileHandler
 from dotenv import load_dotenv
 import os
+from flask_mail import Mail, Message
+from email_validator import validate_email, EmailNotValidError
 
 # Cargar variables de entorno
 load_dotenv()
+
+# Configurar Flask-Mail
+mail = Mail()
 
 def create_app(config_name):
     """Crea y configura la aplicación Flask."""
     app = Flask(__name__, template_folder='vistas/templates', static_folder='vistas/static')
     app.config.from_object(config_by_name[config_name])
 
-    # Configurar Flask-Session
-    app.config['SESSION_TYPE'] = 'filesystem'  # O usa 'redis', 'memcached', según tu configuración
-    app.config['SESSION_PERMANENT'] = False
-    app.config['SESSION_USE_SIGNER'] = True
-    app.config['SESSION_KEY_PREFIX'] = 'chatbot_'
-    app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'supersecretkey')
+    # Inicializar Flask-Session
     Session(app)
+
+    # Configuración de Flask-Mail
+    app.config['MAIL_SERVER'] = os.getenv('MAIL_SERVER')
+    app.config['MAIL_PORT'] = os.getenv('MAIL_PORT')
+    app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME')
+    app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')
+    app.config['MAIL_USE_TLS'] = os.getenv('MAIL_USE_TLS', 'true').lower() in ['true', '1', 't']
+    app.config['MAIL_USE_SSL'] = os.getenv('MAIL_USE_SSL', 'false').lower() in ['true', '1', 't']
+
+    mail.init_app(app)
 
     # Configurar opciones del motor SQLAlchemy
     app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
@@ -91,4 +101,3 @@ if __name__ == '__main__':
     config_name = os.getenv('FLASK_CONFIG', 'default')
     app = create_app(config_name)
     app.run(debug=True)
-
