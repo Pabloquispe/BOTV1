@@ -21,7 +21,12 @@ def create_app(config_name):
     app = Flask(__name__, template_folder='vistas/templates', static_folder='vistas/static')
     app.config.from_object(config_by_name[config_name])
 
-    # Inicializar Flask-Session
+    # Configurar Flask-Session
+    app.config['SESSION_TYPE'] = 'filesystem'  # O usa 'redis', 'memcached', según tu configuración
+    app.config['SESSION_PERMANENT'] = False
+    app.config['SESSION_USE_SIGNER'] = True
+    app.config['SESSION_KEY_PREFIX'] = 'chatbot_'
+    app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'supersecretkey')
     Session(app)
 
     # Configurar opciones del motor SQLAlchemy
@@ -86,6 +91,4 @@ if __name__ == '__main__':
     config_name = os.getenv('FLASK_CONFIG', 'default')
     app = create_app(config_name)
     app.run(debug=True)
-
-
 
