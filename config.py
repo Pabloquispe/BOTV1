@@ -27,13 +27,14 @@ class Config:
     SESSION_FILE_MODE = 0o600
     SESSION_COOKIE_NAME = 'my_session'
 
-    # Configuración de correo electrónico
+    # Configuración del correo
     MAIL_SERVER = os.environ.get('MAIL_SERVER')
-    MAIL_PORT = int(os.environ.get('MAIL_PORT') or 25)
-    MAIL_USE_TLS = os.environ.get('MAIL_USE_TLS', 'false').lower() in ['true', 'on', '1']
-    MAIL_USE_SSL = os.environ.get('MAIL_USE_SSL', 'false').lower() in ['true', 'on', '1']
+    MAIL_PORT = os.environ.get('MAIL_PORT')
+    MAIL_USE_TLS = os.environ.get('MAIL_USE_TLS', 'false').lower() in ['true', '1', 't']
+    MAIL_USE_SSL = os.environ.get('MAIL_USE_SSL', 'false').lower() in ['true', '1', 't']
     MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
     MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
+    MAIL_DEFAULT_SENDER = os.environ.get('MAIL_USERNAME')
 
 class DevelopmentConfig(Config):
     """Configuración utilizada durante el desarrollo."""
@@ -58,3 +59,4 @@ config_by_name = {
     'prod': ProductionConfig,
     'default': DevelopmentConfig
 }
+
